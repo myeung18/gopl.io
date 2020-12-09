@@ -40,16 +40,17 @@ func makeThumbnails2(filenames []string) {
 // makeThumbnails3 makes thumbnails of the specified files in parallel.
 func makeThumbnails3(filenames []string) {
 	ch := make(chan struct{})
+
 	for _, f := range filenames {
 		go func(f string) {
 			thumbnail.ImageFile(f) // NOTE: ignoring errors
-			ch <- struct{}{}
+			ch <- struct{}{} //signal the end of operation
 		}(f)
 	}
 
 	// Wait for goroutines to complete.
 	for range filenames {
-		<-ch
+		<-ch   // take out from ch the above put in
 	}
 }
 
@@ -122,6 +123,7 @@ func makeThumbnails6(filenames <-chan string) int64 {
 		// worker
 		go func(f string) {
 			defer wg.Done()
+
 			thumb, err := thumbnail.ImageFile(f)
 			if err != nil {
 				log.Println(err)
@@ -146,3 +148,35 @@ func makeThumbnails6(filenames <-chan string) int64 {
 }
 
 //!-6
+
+func makeItMy(files <- chan string) int {
+	sizes := make(chan int)
+
+	var wg sync.WaitGroup
+	for f := range files {
+		wg.Add(1)      //each file is a goroutine
+		go func(f string) {
+			defer wg.Done()  //reduce a count
+
+			thumb, err := thumbnail.ImageFile(f)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			info, _ := os.Stat(thumb)
+			sizes <- info.Size() //send out the result
+		}(f)
+
+	} //
+
+	go func() {
+		wg.Wait()
+		close(sizes)
+	}()
+
+	for s  := range sizes {
+		fmt.Println(s)
+	}
+
+	return 0
+}

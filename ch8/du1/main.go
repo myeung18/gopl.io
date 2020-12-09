@@ -25,17 +25,17 @@ func main() {
 	}
 
 	// Traverse the file tree.
-	fileSizes := make(chan int64)
+	fileSizes := make(chan int64)       //a space to collect the result
 	go func() {
 		for _, root := range roots {
 			walkDir(root, fileSizes)
 		}
-		close(fileSizes)
+		close(fileSizes)                //seal the result
 	}()
 
 	// Print the results.
 	var nfiles, nbytes int64
-	for size := range fileSizes {
+	for size := range fileSizes {  //collect the data from the space
 		nfiles++
 		nbytes += size
 	}

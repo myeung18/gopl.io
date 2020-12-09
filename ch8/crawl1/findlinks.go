@@ -40,16 +40,20 @@ func main() {
 
 	// Crawl the web concurrently.
 	seen := make(map[string]bool)
-	for list := range worklist {
+	for list := range worklist { //looks like poll from a Queue
+
 		for _, link := range list {
+
 			if !seen[link] {
 				seen[link] = true
+
 				go func(link string) {
-					worklist <- crawl(link)
+					worklist <- crawl(link) //add back to the Queue - BFS
 				}(link)
 			}
-		}
-	}
+
+		} //for
+	} //for
 }
 
 //!-main

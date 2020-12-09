@@ -45,6 +45,18 @@ func main() {
 		}()
 	}
 
+	for i := 0; i < 20; i++ {
+		go func() {
+			for link := range unseenLinks {
+				found := crawl(link)
+				go func() {
+					worklist <- found //it is not buffered, use goroutine here
+				}()
+			} //
+		}()
+
+	}
+
 	// The main goroutine de-duplicates worklist items
 	// and sends the unseen ones to the crawlers.
 	seen := make(map[string]bool)
@@ -52,8 +64,8 @@ func main() {
 		for _, link := range list {
 			if !seen[link] {
 				seen[link] = true
-				unseenLinks <- link
-			}
+				unseenLinks <- link          //send to an unseenlink to process 
+	 		}
 		}
 	}
 }
