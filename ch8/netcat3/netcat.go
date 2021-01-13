@@ -7,6 +7,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -21,15 +22,19 @@ func main() {
 	}
 	done := make(chan struct{})
 	go func() {
+		fmt.Println("send to server")
 		io.Copy(os.Stdout, conn) // NOTE: ignoring errors
-		log.Println("done")
+		fmt.Println("done")
 
 		done <- struct{}{} // signal the main goroutine
 
 	}()
+	//receive from server
 	mustCopy(conn, os.Stdin)
 	conn.Close()
 	<-done // wait for background goroutine to finish
+
+	fmt.Println("afetr done")
 }
 
 //!-

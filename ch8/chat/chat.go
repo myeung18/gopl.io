@@ -25,7 +25,7 @@ var (
 
 func broadcaster() {
 	clients := make(map[client]bool) // all connected clients
-	for {
+	for { //continuously wait for new thing to happen
 		select {
 		case msg := <-messages:
 			// Broadcast incoming message to all
@@ -82,14 +82,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go broadcaster()
+	go broadcaster()     //create a goroutine to take active on the fly
 	for {
-		conn, err := listener.Accept()
+		conn, err := listener.Accept() //allows new client to join anytime
 		if err != nil {
 			log.Print(err)
 			continue
 		}
-		go handleConn(conn)
+		go handleConn(conn)  //the new client in its own goroutine
 	}
 }
 

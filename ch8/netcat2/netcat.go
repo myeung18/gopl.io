@@ -20,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	go mustCopy(os.Stdout, conn)
+	go mustCopy(os.Stdout, conn)  //new thread for sending
 	mustCopy(conn, os.Stdin)
 }
 

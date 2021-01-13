@@ -42,7 +42,7 @@ func main() {
 	// Cancel traversal when input is detected.
 	go func() {
 		os.Stdin.Read(make([]byte, 1)) // read a single byte
-		close(done)
+		close(done) //indicated cancellaion state
 	}()
 	//!-2
 
@@ -55,7 +55,7 @@ func main() {
 	}
 	go func() {
 		n.Wait()
-		close(fileSizes)
+		close(fileSizes) //wait before close!!
 	}()
 
 	// Print the results periodically.
@@ -67,7 +67,7 @@ loop:
 		select {
 		case <-done:
 			// Drain fileSizes to allow existing goroutines to finish.
-			for range fileSizes {
+			for range fileSizes { //don't care the data as well
 				// Do nothing.
 			}
 			return

@@ -26,8 +26,8 @@ func echo(c net.Conn, shout string, delay time.Duration) {
 
 func handleConn(c net.Conn) {
 	input := bufio.NewScanner(c)
-	for input.Scan() {
-		echo(c, input.Text(), 1*time.Second)
+	for input.Scan() { //blocking!!
+		echo(c, input.Text(), 1*time.Second) //could be concurrent
 	}
 	// NOTE: ignoring potential errors from input.Err()
 	c.Close()

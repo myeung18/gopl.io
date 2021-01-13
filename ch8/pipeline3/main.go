@@ -21,7 +21,7 @@ func squarer(out chan<- int, in <-chan int) {
 	for v := range in {
 		out <- v * v
 	}
-	close(out)
+	close(out) //the received can still read all the value send after closing!!
 }
 
 func printer(in <-chan int) {

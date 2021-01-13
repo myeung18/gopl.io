@@ -8,6 +8,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -15,11 +16,14 @@ import (
 )
 
 func main() {
+	fmt.Println("-*****************--")
+
 	conn, err := net.Dial("tcp", "localhost:8000")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
+	fmt.Println("-*****************--")
 	mustCopy(os.Stdout, conn)
 }
 
