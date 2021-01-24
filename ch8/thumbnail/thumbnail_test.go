@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"fmt"
 
 	"gopl.io/ch8/thumbnail"
 )
@@ -21,7 +22,7 @@ func makeThumbnails(filenames []string) {
 		if _, err := thumbnail.ImageFile(f); err != nil {
 			log.Println(err)
 		}
-	}
+	} //for
 }
 
 //!-1
@@ -31,7 +32,7 @@ func makeThumbnails(filenames []string) {
 func makeThumbnails2(filenames []string) {
 	for _, f := range filenames {
 		go thumbnail.ImageFile(f) // NOTE: ignoring errors
-	}
+	} //for
 }
 
 //!-2
@@ -150,7 +151,7 @@ func makeThumbnails6(filenames <-chan string) int64 {
 //!-6
 
 func makeItMy(files <- chan string) int {
-	sizes := make(chan int)
+	sizes := make(chan int64)
 
 	var wg sync.WaitGroup
 	for f := range files {
@@ -174,7 +175,7 @@ func makeItMy(files <- chan string) int {
 		close(sizes)
 	}()
 
-	for s  := range sizes {
+	for s := range sizes {
 		fmt.Println(s)
 	}
 

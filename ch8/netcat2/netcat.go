@@ -20,14 +20,16 @@ func main() {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	go mustCopy(os.Stdout, conn)  //new thread for sending
-	mustCopy(conn, os.Stdin)
+	go mustCopy(os.Stdout, conn, "go routine")  //new thread for sending
+	mustCopy(conn, os.Stdin, "main routine.") //main thread for reading
 }
 
 //!-
 
-func mustCopy(dst io.Writer, src io.Reader) {
+func mustCopy(dst io.Writer, src io.Reader, str string) {
+	log.Println("name:", str)
+
 	if _, err := io.Copy(dst, src); err != nil {
-		log.Fatal(err)
+		log.Fatal(err, " from ", str)
 	}
 }

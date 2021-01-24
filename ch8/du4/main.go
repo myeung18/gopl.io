@@ -42,7 +42,7 @@ func main() {
 	// Cancel traversal when input is detected.
 	go func() {
 		os.Stdin.Read(make([]byte, 1)) // read a single byte
-		close(done) //indicated cancellaion state
+		close(done)                    //indicated cancellaion state
 	}()
 	//!-2
 
@@ -120,9 +120,9 @@ var sema = make(chan struct{}, 20) // concurrency-limiting counting semaphore
 //!+5
 func dirents(dir string) []os.FileInfo {
 	select {
-	case sema <- struct{}{}: // acquire token
+	case sema <- struct{}{}: // acquire token, block of no token
 	case <-done:
-		return nil // cancelled
+		return nil // cancelled, when whne it is closed
 	}
 	defer func() { <-sema }() // release token
 

@@ -20,21 +20,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	done := make(chan struct{})
 	go func() {
 		fmt.Println("send to server")
 		io.Copy(os.Stdout, conn) // NOTE: ignoring errors
 		fmt.Println("done")
 
-		done <- struct{}{} // signal the main goroutine
-
+		done <- struct{}{} 		// signal the main goroutine
 	}()
+
 	//receive from server
 	mustCopy(conn, os.Stdin)
-	conn.Close()
-	<-done // wait for background goroutine to finish
+	conn.Close()   	/** this has two effects  */
+	<-done 			// wait for background goroutine to finish
 
-	fmt.Println("afetr done")
+	fmt.Println("after done")
 }
 
 //!-
@@ -43,4 +44,26 @@ func mustCopy(dst io.Writer, src io.Reader) {
 	if _, err := io.Copy(dst, src); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func test() {
+	conn, err := net.Dial("","")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	done := make(chan struct{})
+	go func() {
+		//inside a thread/goroutine
+		fmt.Println("send a msg")
+		io.Copy(os.Stdout, conn)
+		fmt.Println("done")
+
+		done <- struct{}{}
+	}()
+
+	mustCopy(conn, os.Stdin) //block call
+	conn.Close()
+
+	<- done
 }

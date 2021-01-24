@@ -59,9 +59,8 @@ func main() {
 				go func(link string) {
 					worklist <- crawl(link)
 				}(link)
-
 			}
-		}
+		} //
 	}
 }
 

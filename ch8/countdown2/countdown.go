@@ -39,18 +39,6 @@ func main() {
 	launch()
 }
 
-
-func cntDown() {
-	fmt.Println("program starts")
-	select {
-	case <- time.After(10 * time.Second):
-		//do some scheduled work
-	case <- abort:
-		return
-	default:
-		//
-	}	
-}
 //!-
 
 func launch() {

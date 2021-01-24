@@ -40,3 +40,8 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+
+func make6(filenames <-chan string) {
+
+}

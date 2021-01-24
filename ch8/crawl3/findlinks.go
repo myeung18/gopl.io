@@ -54,7 +54,6 @@ func main() {
 				}()
 			} //
 		}()
-
 	}
 
 	// The main goroutine de-duplicates worklist items
