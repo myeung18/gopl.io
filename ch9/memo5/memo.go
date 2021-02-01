@@ -35,38 +35,55 @@ type request struct {
 	response chan<- result // the client wants a single result
 }
 
-type Memo struct{ requests chan request }
+type Memo struct {
+	requests chan request
+}
 
 // New returns a memoization of f.  Clients must subsequently call Close.
 func New(f Func) *Memo {
 	memo := &Memo{requests: make(chan request)}
+	//start the back-ground server !!
 	go memo.server(f)
 	return memo
 }
 
 func (memo *Memo) Get(key string) (interface{}, error) {
 	response := make(chan result)
+	//communicate with server which is waiting for request
+
+	//the request include response for server to call back (communicate)
 	memo.requests <- request{key, response}
+
+	//wait for delivery from server
 	res := <-response
 	return res.value, res.err
 }
 
-func (memo *Memo) Close() { close(memo.requests) }
+func (memo *Memo) Close() {
+	//stop the server !!!
+	close(memo.requests)
+}
 
 //!-get
 
 //!+monitor
 
+//hidden func, been called as thread
+//Monitor goroutine
 func (memo *Memo) server(f Func) {
 	cache := make(map[string]*entry)
-	for req := range memo.requests {
+	//will get request from Get func
+	for req := range memo.requests { //always wait until it is closed
 		e := cache[req.key]
 		if e == nil {
+
 			// This is the first request for this key.
 			e = &entry{ready: make(chan struct{})}
 			cache[req.key] = e
+			//call as an thread, communicate with channel
 			go e.call(f, req.key) // call f(key)
 		}
+		//exists now, deliver
 		go e.deliver(req.response)
 	}
 }

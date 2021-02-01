@@ -31,6 +31,7 @@ func New(f Func) *Memo {
 func (memo *Memo) Get(key string) (interface{}, error) {
 	res, ok := memo.cache[key]
 	if !ok {
+		//result have the fields to store everything from Func
 		res.value, res.err = memo.f(key)
 		memo.cache[key] = res
 	}

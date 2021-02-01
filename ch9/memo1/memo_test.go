@@ -4,6 +4,7 @@
 package memo_test
 
 import (
+	"fmt"
 	"testing"
 
 	"gopl.io/ch9/memo1"
@@ -11,10 +12,22 @@ import (
 )
 
 var httpGetBody = memotest.HTTPGetBody
+var againOtherFun = memotest.OtherFun
 
 func Test(t *testing.T) {
 	m := memo.New(httpGetBody)
 	memotest.Sequential(t, m)
+}
+
+func testMy(t *testing.T) {
+	for _, url := range []string{
+		"new syntax...",
+		"http://gopl.io",
+		"https://golang.org",
+		"https://godoc.org",
+	} {
+		fmt.Println("url: ", url)
+	}
 }
 
 // NOTE: not concurrency-safe!  Test fails.

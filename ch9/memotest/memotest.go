@@ -76,6 +76,31 @@ func Sequential(t *testing.T, m M) {
 	//!-seq
 }
 
+func Sequential_thread(t *testing.T, m M) {
+
+	var wg sync.WaitGroup
+	//!+seq
+	for url := range incomingURLs() {
+		wg.Add(1)     //a new thread
+
+		go func(url string) {
+			defer wg.Done() //thread is done
+
+			start := time.Now()
+			value, err := m.Get(url)
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			fmt.Printf("%s, %s, %d bytes\n",
+				url, time.Since(start), len(value.([]byte)))
+		}(url)
+	}
+	//!-seq
+
+	wg.Wait()
+}
+
 /*
 //!+conc
 	m := memo.New(httpGetBody)
